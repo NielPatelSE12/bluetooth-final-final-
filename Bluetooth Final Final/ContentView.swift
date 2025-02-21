@@ -1,24 +1,29 @@
-//
-//  ContentView.swift
-//  Bluetooth Final Final
-//
-//  Created by Niel Patel on 2/21/25.
-//
-
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject var bluetoothManager = BluetoothManager()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            List(bluetoothManager.discoveredDevices) { device in
+                NavigationLink(destination: DeviceDetailView(device: device)) {
+                    VStack(alignment: .leading) {
+                        Text(device.name)
+                            .font(.headline)
+                        Text("RSSI: \(device.rssi)")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+            .navigationTitle("Bluetooth Devices")
+            .onAppear {
+                bluetoothManager.startScanning()
+            }
+            .onDisappear {
+                bluetoothManager.stopScanning()
+            }
         }
-        .padding()
     }
 }
 
-#Preview {
-    ContentView()
-}
